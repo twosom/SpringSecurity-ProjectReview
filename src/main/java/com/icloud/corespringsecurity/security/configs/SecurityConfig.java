@@ -2,8 +2,10 @@ package com.icloud.corespringsecurity.security.configs;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,8 +36,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         auth.inMemoryAuthentication().withUser("user").password(password).roles("USER")
                 .and()
-                .withUser("manager").password(password).roles("MANAGER")
+                .withUser("manager").password(password).roles("USER", "MANAGER")
                 .and()
-                .withUser("admin").password(password).roles("ADMIN");
+                .withUser("admin").password(password).roles("USER", "MANAGER", "ADMIN");
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 }
