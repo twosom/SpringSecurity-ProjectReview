@@ -21,24 +21,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/").permitAll()
+                .antMatchers("/users").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
                 .anyRequest().authenticated();
 
-
         http.formLogin();
-    }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        String password = encoder.encode("1111");
-
-        auth.inMemoryAuthentication().withUser("user").password(password).roles("USER")
-                .and()
-                .withUser("manager").password(password).roles("USER", "MANAGER")
-                .and()
-                .withUser("admin").password(password).roles("USER", "MANAGER", "ADMIN");
+        http.csrf().disable();
     }
 
     @Override
