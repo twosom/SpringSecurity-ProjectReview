@@ -48,4 +48,15 @@ public class LoginController {
                 .status(HttpStatus.BAD_REQUEST)
                 .body("잘못된 요청입니다.");
     }
+
+    @GetMapping("/denied")
+    public String accessDenied(@RequestParam(value = "exception", required = false) String exception,
+                               Model model) {
+        Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        model.addAttribute("username", account.getUsername());
+        model.addAttribute("exception", exception);
+
+        return "user/login/denied";
+    }
 }

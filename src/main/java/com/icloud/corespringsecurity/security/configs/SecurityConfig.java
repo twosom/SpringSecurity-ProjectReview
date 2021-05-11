@@ -1,6 +1,7 @@
 package com.icloud.corespringsecurity.security.configs;
 
 import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
+import com.icloud.corespringsecurity.security.handler.CustomAccessDeniedHandler;
 import com.icloud.corespringsecurity.security.handler.CustomAuthenticationFailureHandler;
 import com.icloud.corespringsecurity.security.handler.CustomAuthenticationSuccessHandler;
 import com.icloud.corespringsecurity.security.provider.CustomAuthenticationProvider;
@@ -26,9 +27,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailureHandler failureHandler;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        accessDeniedHandler.setErrorPage("/denied");
+
         http.authorizeRequests()
                 .antMatchers("/", "/users", "user/login.**", "/login*").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
@@ -43,7 +48,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/")
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
-                .permitAll();
+                .permitAll()
+                .and()
+                .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler);
     }
 
     @Override
