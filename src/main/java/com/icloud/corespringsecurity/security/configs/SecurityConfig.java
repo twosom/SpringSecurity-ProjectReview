@@ -1,21 +1,17 @@
 package com.icloud.corespringsecurity.security.configs;
 
 import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
-import com.icloud.corespringsecurity.security.common.FormWebAuthenticationDetails;
+import com.icloud.corespringsecurity.security.handler.CustomAuthenticationSuccessHandler;
 import com.icloud.corespringsecurity.security.provider.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -26,6 +22,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomAuthenticationProvider authenticationProvider;
 
     private final FormAuthenticationDetailsSource authenticationDetailsSource;
+
+    private final CustomAuthenticationSuccessHandler successHandler;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -41,9 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login_proc")
                 .authenticationDetailsSource(authenticationDetailsSource)
                 .defaultSuccessUrl("/")
+                .successHandler(successHandler)
                 .permitAll();
-
-
     }
 
     @Override
