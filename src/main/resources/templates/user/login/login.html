@@ -12,6 +12,7 @@
                 <p>아이디와 비밀번호를 입력해주세요</p>
             </div>
             <form th:action="@{/login_proc}" class="form-signin" method="post">
+                <input type="hidden" th:value="secret" name="secret_key" id="secret_key">
                 <div class="form-group">
                     <input type="text" class="form-control" name="username" id="username" placeholder="아이디" required
                            autofocus/>
@@ -41,7 +42,7 @@
             .post()
             .url('/login_proc')
             .headers(header)
-            .form('username', 'password')
+            .form('username', 'password', 'secret_key')
             .then(response => {
                 if (!response.ok || response.url.includes('error')) {
                     throw new Error("로그인에 실패하였습니다.");
