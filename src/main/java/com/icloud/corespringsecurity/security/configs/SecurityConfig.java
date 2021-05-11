@@ -1,6 +1,7 @@
 package com.icloud.corespringsecurity.security.configs;
 
 import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
+import com.icloud.corespringsecurity.security.handler.CustomAuthenticationFailureHandler;
 import com.icloud.corespringsecurity.security.handler.CustomAuthenticationSuccessHandler;
 import com.icloud.corespringsecurity.security.provider.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final FormAuthenticationDetailsSource authenticationDetailsSource;
 
     private final CustomAuthenticationSuccessHandler successHandler;
+    private final CustomAuthenticationFailureHandler failureHandler;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/", "/users", "user/login.**", "/logout").permitAll()
+                .antMatchers("/", "/users", "user/login.**", "/login*").permitAll()
                 .antMatchers("/mypage").hasRole("USER")
                 .antMatchers("/messages").hasRole("MANAGER")
                 .antMatchers("/config").hasRole("ADMIN")
@@ -40,6 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationDetailsSource(authenticationDetailsSource)
                 .defaultSuccessUrl("/")
                 .successHandler(successHandler)
+                .failureHandler(failureHandler)
                 .permitAll();
     }
 
