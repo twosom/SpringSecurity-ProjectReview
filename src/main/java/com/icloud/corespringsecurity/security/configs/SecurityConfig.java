@@ -1,5 +1,7 @@
 package com.icloud.corespringsecurity.security.configs;
 
+import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
+import com.icloud.corespringsecurity.security.common.FormWebAuthenticationDetails;
 import com.icloud.corespringsecurity.security.provider.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final CustomAuthenticationProvider authenticationProvider;
 
+    private final FormAuthenticationDetailsSource authenticationDetailsSource;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
@@ -35,10 +39,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login_proc")
+                .authenticationDetailsSource(authenticationDetailsSource)
                 .defaultSuccessUrl("/")
                 .permitAll();
 
-//        http.csrf().disable();
+
     }
 
     @Override
