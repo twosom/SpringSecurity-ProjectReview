@@ -10,7 +10,7 @@ const fetchDsl = {
     },
     /**
      *
-     * @param url 대상이 되는 url을 적어줍니다.
+     * @param url 대상이 되는 url 을 적어줍니다.
      */
     url(url) {
         this.option.url = url;

@@ -1,6 +1,7 @@
 package com.icloud.corespringsecurity.security.configs;
 
 import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
+import com.icloud.corespringsecurity.security.filter.AjaxLoginProcessingFilter;
 import com.icloud.corespringsecurity.security.handler.CustomAccessDeniedHandler;
 import com.icloud.corespringsecurity.security.handler.CustomAuthenticationFailureHandler;
 import com.icloud.corespringsecurity.security.handler.CustomAuthenticationSuccessHandler;
@@ -8,12 +9,15 @@ import com.icloud.corespringsecurity.security.provider.CustomAuthenticationProvi
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailureHandler failureHandler;
     private final CustomAccessDeniedHandler accessDeniedHandler;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -48,10 +53,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/")
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
-                .permitAll()
-                .and()
-                .exceptionHandling()
+                .permitAll();
+
+        http.exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler);
+
+        http.addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.csrf().disable();
     }
 
     @Override
@@ -62,6 +71,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider);
+    }
+
+
+    @Bean
+    public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
+        AjaxLoginProcessingFilter filter = new AjaxLoginProcessingFilter();
+        filter.setAuthenticationManager(authenticationManager());
+        return filter;
     }
 
 
