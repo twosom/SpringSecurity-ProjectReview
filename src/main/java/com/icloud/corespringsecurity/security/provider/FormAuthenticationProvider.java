@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
 
 @RequiredArgsConstructor
 @Configuration
-public class CustomAuthenticationProvider implements AuthenticationProvider {
+public class FormAuthenticationProvider implements AuthenticationProvider {
 
     private final PasswordEncoder encoder;
     private final UserDetailsService userDetailsService;
