@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="layout/header::userHead"></head>
-<script th:src="@{/js/fetchData.js}" defer></script>
+<script th:src="@{/js/fetchDSL.js}" defer></script>
 <body>
 <div th:replace="layout/top::header"></div>
 
@@ -60,18 +60,20 @@
 </body>
 <script>
     function createUser() {
-        fetchData.form('/users', 'POST', 'username', 'password', 'email', 'age', 'role')
+        fetchDsl
+            .url('/users')
+            .post()
+            .form('username', 'password', 'email', 'age', 'role')
             .then(response => {
                 if (response.status !== 201) {
-                    throw new Error('회원 가입 실패');
+                    throw new Error('오류가 발생하였습니다.');
                 }
-
-                alert('회원가입 성공');
+                alert('가입에 성공하였습니다.');
                 window.location = '/';
-            }).catch(error => {
-            alert(error.message);
-            window.location = '/users';
-        })
+            })
+            .catch(reason => {
+                alert(reason.message);
+            });
     }
 </script>
 </html>
