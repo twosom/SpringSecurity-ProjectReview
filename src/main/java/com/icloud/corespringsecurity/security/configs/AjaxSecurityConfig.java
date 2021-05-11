@@ -1,6 +1,8 @@
 package com.icloud.corespringsecurity.security.configs;
 
 import com.icloud.corespringsecurity.security.filter.AjaxLoginProcessingFilter;
+import com.icloud.corespringsecurity.security.handler.AjaxAuthenticationFailureHandler;
+import com.icloud.corespringsecurity.security.handler.AjaxAuthenticationSuccessHandler;
 import com.icloud.corespringsecurity.security.provider.AjaxAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +22,18 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AjaxAuthenticationProvider ajaxAuthenticationProvider;
 
+    private final AjaxAuthenticationSuccessHandler successHandler;
+    private final AjaxAuthenticationFailureHandler failureHandler;
+
 
     @Bean
     public AjaxLoginProcessingFilter ajaxLoginProcessingFilter() throws Exception {
         AjaxLoginProcessingFilter filter = new AjaxLoginProcessingFilter();
         filter.setAuthenticationManager(authenticationManager());
+
+        /* http.formLogin() 메소드와는 다르게 사용자가 정의한 필터에는 Bean 객체에다가 successHandler, failureHandler 를 설정한다. */
+        filter.setAuthenticationSuccessHandler(successHandler);
+        filter.setAuthenticationFailureHandler(failureHandler);
         return filter;
     }
 
