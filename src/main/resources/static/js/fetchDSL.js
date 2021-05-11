@@ -5,7 +5,8 @@
 const fetchDsl = {
     option: {
         url: '',
-        method: 'GET'
+        method: 'GET',
+        header: {}
     },
     /**
      *
@@ -49,8 +50,8 @@ const fetchDsl = {
      *
      * @param headers 설정하고자 하는 헤더 값들을 정의합니다.
      */
-    headers(...headers) {
-        this.option.header = headers;
+    headers(headers) {
+        this.option.headers = headers;
         return this;
     },
     initForm(properties) {

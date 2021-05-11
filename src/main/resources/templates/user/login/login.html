@@ -1,6 +1,7 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/header.html::userHead"></head>
+<head th:replace="layout/header.html::userHead">
+</head>
 <script th:src="@{/js/fetchDSL.js}" defer></script>
 <body>
 <div th:replace="layout/top.html::header"></div>
@@ -27,9 +28,19 @@
 </div>
 <script>
     function login() {
+
+        const csrfHeader = document.querySelector('#_csrf_header').content;
+        const csrf = document.querySelector('#_csrf').content;
+        const header = {
+            [csrfHeader]: csrf,
+            contentType: 'application/x-www-form-urlencoded'
+        };
+
+
         fetchDsl
             .post()
             .url('/login_proc')
+            .headers(header)
             .form('username', 'password')
             .then(response => {
                 if (!response.ok || response.url.includes('error')) {
