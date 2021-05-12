@@ -25,7 +25,7 @@ public class AjaxLoginConfigurer<H extends HttpSecurityBuilder<H>>
 
     @Override
     protected RequestMatcher createLoginProcessingUrlMatcher(String loginProcessingUrl) {
-        return new AntPathRequestMatcher(loginProcessingUrl);
+        return new AntPathRequestMatcher(loginProcessingUrl, "POST");
     }
 
 

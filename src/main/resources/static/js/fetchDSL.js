@@ -1,4 +1,3 @@
-
 /**
  *  DSL 형식으로 fetch API 를 사용할 수 있게 재정의함.
  */
@@ -69,5 +68,42 @@ const fetchDsl = {
     async form(...properties) {
         this.initForm(properties);
         return await fetch(this.option.url, this.option);
+    },
+    initJson(properties) {
+        const data = {};
+        properties.forEach((property) => {
+            data[property] = document.querySelector('#' + property).value;
+        });
+        this.option.body = JSON.stringify(data);
+    },
+    /**
+     * Ajax 방식으로 설정합니다.
+     * 내부에서 JSON 으로 변환 후 전송합니다.
+     * @param properties JSON 으로 변환할 객체의 ID 값만 넘겨줍니다.<br/>
+     * 내부에서 JSON 타입으로 변환 후 전송합니다.
+     */
+    async json(...properties) {
+
+        if (properties.length > 0) {
+            this.initJson(properties);
+        }
+        const response = await fetch(this.option.url, this.option);
+        if (response.status !== 200) {
+            const result = {};
+            switch (response.status) {
+                case 401:
+                    result.status = 401;
+                    result.json = await response.json();
+                    throw result;
+                case 403:
+                    result.status = 403;
+                    result.json = await response.json();
+                    throw result;
+
+                default:
+                    throw await response.text();
+            }
+        }
+        return await response.text();
     }
 }

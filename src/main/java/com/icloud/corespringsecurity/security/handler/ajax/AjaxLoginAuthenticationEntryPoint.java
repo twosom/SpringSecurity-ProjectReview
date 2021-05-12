@@ -17,12 +17,6 @@ import java.io.IOException;
 @Component
 public class AjaxLoginAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    /*
-        RequestCache 가능 여부 실험하기
-        인증 성공 후에 RequestCache 사용 가능한가.
-     */
-
-
     @Override
 
     public void commence(HttpServletRequest request,
