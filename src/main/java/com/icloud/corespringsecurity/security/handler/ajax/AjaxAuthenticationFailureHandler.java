@@ -1,4 +1,4 @@
-package com.icloud.corespringsecurity.security.handler;
+package com.icloud.corespringsecurity.security.handler.ajax;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
