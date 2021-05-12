@@ -1,9 +1,12 @@
-package com.icloud.corespringsecurity.security.handler;
+package com.icloud.corespringsecurity.security.handler.ajax;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.icloud.corespringsecurity.domain.Account;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.DefaultRedirectStrategy;
-import org.springframework.security.web.RedirectStrategy;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -15,22 +18,27 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+@Slf4j
+public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private RequestCache requestCache = new HttpSessionRequestCache();
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        setDefaultTargetUrl("/");
+
+        Account account = (Account) authentication.getPrincipal();
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
+
+        response.setStatus(HttpStatus.OK.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         if (savedRequest != null) {
-            redirectStrategy.sendRedirect(request, response, savedRequest.getRedirectUrl());
-        } else {
-            redirectStrategy.sendRedirect(request, response, getDefaultTargetUrl());
+            log.info("redirect URL : {}", savedRequest.getRedirectUrl());
         }
+
+        /* ObjectMapper 가 JSON 형식으로 변환해서 Response 를 이용하여 Client 에 전달 */
+        new ObjectMapper().writeValue(response.getWriter(), account);
     }
 }

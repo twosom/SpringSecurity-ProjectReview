@@ -1,4 +1,4 @@
-package com.icloud.corespringsecurity.security.handler;
+package com.icloud.corespringsecurity.security.handler.form;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class CustomAccessDeniedHandler implements AccessDeniedHandler {
+public class FormAccessDeniedHandler implements AccessDeniedHandler {
 
     private String errorPage;
 
