@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class LoginController {
 
-    @GetMapping("/login")
+    @GetMapping(value = {"/login", "/api/login"})
     public String login(@RequestParam(value = "error", required = false) String error,
                         @RequestParam(value = "exception", required = false) String exception,
                         Model model) {
@@ -49,7 +49,7 @@ public class LoginController {
                 .body("잘못된 요청입니다.");
     }
 
-    @GetMapping("/denied")
+    @GetMapping(value = {"/denied", "/api/denied"})
     public String accessDenied(@RequestParam(value = "exception", required = false) String exception,
                                Model model) {
         Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

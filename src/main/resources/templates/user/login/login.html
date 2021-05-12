@@ -24,14 +24,14 @@
                     <input type="password" class="form-control" name="password" id="password" placeholder="비밀번호"
                            required/>
                 </div>
-                <button type="button" onclick="login()" class="btn btn-1g btn-primary btn-block">로그인</button>
+                <button type="button" onclick="ajaxLogin()" class="btn btn-1g btn-primary btn-block">로그인</button>
 
             </form>
         </div>
     </div>
 </div>
 <script>
-    function login() {
+    function formLogin() {
 
         const csrfHeader = document.querySelector('#_csrf_header').content;
         const csrf = document.querySelector('#_csrf').content;
@@ -56,6 +56,32 @@
             alert('로그인에 실패하였습니다.');
             window.location = response.url;
         });
+    }
+
+
+    async function ajaxLogin() {
+
+        const csrfHeader = document.querySelector('#_csrf_header').content;
+        const csrf = document.querySelector('#_csrf').content;
+        const header = {
+            [csrfHeader]: csrf,
+            contentType: 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+
+        fetchDsl
+            .post()
+            .url('/api/login')
+            .headers(header)
+            .json('username', 'password')
+            .then(response => {
+                alert('로그인에 성공하였습니다.');
+                window.location = '/';
+            })
+            .catch(response => {
+                alert('로그인에 실패하였습니다.');
+                window.location = '/login?error=true&exception=' + response;
+            });
     }
 </script>
 </body>

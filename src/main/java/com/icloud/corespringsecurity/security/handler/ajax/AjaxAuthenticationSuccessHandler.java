@@ -34,9 +34,6 @@ public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHa
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        if (savedRequest != null) {
-            log.info("redirect URL : {}", savedRequest.getRedirectUrl());
-        }
 
         /* ObjectMapper 가 JSON 형식으로 변환해서 Response 를 이용하여 Client 에 전달 */
         new ObjectMapper().writeValue(response.getWriter(), account);
