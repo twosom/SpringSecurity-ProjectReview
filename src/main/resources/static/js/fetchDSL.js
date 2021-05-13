@@ -71,9 +71,28 @@ const fetchDsl = {
     },
     initJson(properties) {
         const data = {};
-        properties.forEach((property) => {
-            data[property] = document.querySelector('#' + property).value;
-        });
+        let warnCount = 0;
+
+        const iter = properties[Symbol.iterator]();
+        for (const property of iter) {
+            const node = document.querySelector('#' + property);
+            if (node.value.length === 0 || node.value === '') {
+                node.setAttribute('class', 'form-control is-invalid');
+                const feedbackEl = document.querySelector('#' + property + 'Feedback');
+                feedbackEl.setAttribute('class', 'invalid-feedback');
+                feedbackEl.innerText = property + ' must not be empty';
+                warnCount += 1;
+            } else {
+                node.setAttribute('class', 'form-control');
+                const feedbackEl = document.querySelector('#' + property + 'Feedback');
+                feedbackEl.innerText = '';
+            }
+            data[property] = node.value;
+        }
+
+        if (warnCount > 0) {
+            throw new Error('empty');
+        }
         this.option.body = JSON.stringify(data);
     },
     /**
@@ -83,7 +102,6 @@ const fetchDsl = {
      * 내부에서 JSON 타입으로 변환 후 전송합니다.
      */
     async json(...properties) {
-
         if (properties.length > 0) {
             this.initJson(properties);
         }
