@@ -1,14 +1,13 @@
 package com.icloud.corespringsecurity.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.icloud.corespringsecurity.domain.AccountDto;
+import com.icloud.corespringsecurity.domain.dto.AccountDto;
 import com.icloud.corespringsecurity.security.token.AjaxAuthenticationToken;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletException;

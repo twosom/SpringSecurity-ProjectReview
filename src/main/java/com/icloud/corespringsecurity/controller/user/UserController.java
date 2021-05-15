@@ -1,6 +1,6 @@
 package com.icloud.corespringsecurity.controller.user;
 
-import com.icloud.corespringsecurity.domain.AccountDto;
+import com.icloud.corespringsecurity.domain.dto.AccountDto;
 import com.icloud.corespringsecurity.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

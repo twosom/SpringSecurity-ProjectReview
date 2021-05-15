@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div th:fragment="header">
+    <nav class="navbar navbar-dark bg-dark" style="margin-bottom: 10px;">
+        <a class="text-light" href="/"><h4>Core Spring Security</h4></a>
+        <ul class="nav">
+            <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link text-light" onclick="logout()">로그아웃</a>
+            </li>
+            <li class="nav-item"><a class="nav-link text-light" href="/">HOME</a></li>
+        </ul>
+    </nav>
+    <script>
+        async function logout() {
+            await fetch('/logout')
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        alert('잘못된 요청입니다.');
+                        window.location = '/';
+                    }
+                }).then(text => {
+                    alert(text);
+                    window.location = '/';
+                });
+        }
+    </script>
+</div>
+</html>
