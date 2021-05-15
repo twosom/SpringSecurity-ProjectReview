@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,11 +44,30 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     private void setupSecurityResource() {
-        Set<Role> roles = new HashSet<>();
-        Role adminRole = createRoleIfNotFound("ROLE_ADMIN", "관리자");
-        roles.add(adminRole);
-        createResourceIfNotFound("/admin/**", "", roles, "url");
-        Account account = createUserIfNotFound("admin", "1111", "admin@gmail.com", 10, roles);
+        Role role_admin = createRoleIfNotFound("ROLE_ADMIN", "관리자");
+        Role role_user = createRoleIfNotFound("ROLE_USER", "유저");
+        Role role_manager = createRoleIfNotFound("ROLE_MANAGER", "매니저");
+        HashSet<Role> adminSet = new HashSet<>();
+        adminSet.add(role_admin);
+        createResourceIfNotFound("/admin/**", "GET", adminSet, "url");
+        createResourceIfNotFound("/config", "GET", adminSet, "url");
+
+        HashSet<Role> managerSet = new HashSet<>();
+        managerSet.add(role_manager);
+        createResourceIfNotFound("/messages", "GET", managerSet, "url");
+        createResourceIfNotFound("/api/messages", "POST", managerSet, "url");
+
+        HashSet<Role> userSet = new HashSet<>();
+        userSet.add(role_user);
+        createResourceIfNotFound("/mypage", "GET", userSet, "url");
+
+
+        HashSet<Role> allRoles = new HashSet<>();
+        allRoles.add(role_admin);
+        allRoles.add(role_manager);
+        allRoles.add(role_user);
+
+        createUserIfNotFound("admin", "1111", "admin@admin.com", 11, allRoles);
     }
 
     public Resources createResourceIfNotFound(String resourcesName, String httpMethod, Set<Role> roleSet, String resourceType) {
