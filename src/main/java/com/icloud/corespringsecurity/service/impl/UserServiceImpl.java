@@ -30,8 +30,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createUser(AccountDto accountDto) {
-
         Role role = roleRepository.findByRoleName("ROLE_USER");
+        accountDto.setPassword(encoder.encode(accountDto.getPassword()));
         Account account = mapper.map(accountDto, Account.class);
         account.getUserRoles().add(role);
         userRepository.save(account);

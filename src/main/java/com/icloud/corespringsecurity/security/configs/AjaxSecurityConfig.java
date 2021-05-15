@@ -1,20 +1,24 @@
 package com.icloud.corespringsecurity.security.configs;
 
-import com.icloud.corespringsecurity.security.filter.AjaxLoginProcessingFilter;
 import com.icloud.corespringsecurity.security.handler.ajax.AjaxAccessDeniedHandler;
 import com.icloud.corespringsecurity.security.handler.ajax.AjaxAuthenticationFailureHandler;
 import com.icloud.corespringsecurity.security.handler.ajax.AjaxAuthenticationSuccessHandler;
 import com.icloud.corespringsecurity.security.handler.ajax.AjaxLoginAuthenticationEntryPoint;
+import com.icloud.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.icloud.corespringsecurity.security.provider.AjaxAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+
+import java.util.Arrays;
 
 @EnableWebSecurity
 @Slf4j
@@ -30,13 +34,14 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
     private final AjaxLoginAuthenticationEntryPoint authenticationEntryPoint;
     private final AjaxAccessDeniedHandler accessDeniedHandler;
 
+    private final FilterSecurityInterceptor customFilterSecurityInterceptor;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.antMatcher("/api/**")
                 .authorizeRequests()
-                .antMatchers("/api/messages").hasRole("MANAGER")
-                .antMatchers("/api/login").permitAll()
+//                .antMatchers("/api/messages").hasRole("MANAGER")
+//                .antMatchers("/api/login").permitAll()
                 .anyRequest().authenticated();
 
         /*
@@ -45,6 +50,8 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
         http.exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler)
                 .authenticationEntryPoint(authenticationEntryPoint);
+
+        http.addFilterBefore(customFilterSecurityInterceptor, FilterSecurityInterceptor.class);
 
         customConfigurer(http);
     }
@@ -56,7 +63,6 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
                 .setFailureHandlerAjax(failureHandler)
                 .loginProcessingUrl("/api/login");
     }
-
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
