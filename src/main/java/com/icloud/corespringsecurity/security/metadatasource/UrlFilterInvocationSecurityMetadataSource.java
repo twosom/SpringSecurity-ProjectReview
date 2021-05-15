@@ -1,12 +1,10 @@
 package com.icloud.corespringsecurity.security.metadatasource;
 
+import com.icloud.corespringsecurity.service.ResourcesService;
 import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -14,9 +12,12 @@ import java.util.*;
 public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
     private LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap = new LinkedHashMap<>();
+    private ResourcesService resourcesService;
 
-    public UrlFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap) {
+    public UrlFilterInvocationSecurityMetadataSource(LinkedHashMap<RequestMatcher, List<ConfigAttribute>> requestMap,
+                                                     ResourcesService resourcesService) {
         this.requestMap = requestMap;
+        this.resourcesService = resourcesService;
     }
 
 
@@ -44,5 +45,18 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
     @Override
     public boolean supports(Class<?> clazz) {
         return FilterInvocation.class.isAssignableFrom(clazz);
+    }
+
+    public void reload() {
+//        LinkedHashMap<RequestMatcher, List<ConfigAttribute>> reloadedMap = resourcesService.getResourceList();
+//
+//        Iterator<Map.Entry<RequestMatcher, List<ConfigAttribute>>> iterator = reloadedMap.entrySet().iterator();
+//
+//        requestMap.clear();
+//        while (iterator.hasNext()) {
+//            Map.Entry<RequestMatcher, List<ConfigAttribute>> entry = iterator.next();
+//            requestMap.put(entry.getKey(), entry.getValue());
+//        }
+        this.requestMap = resourcesService.getResourceList();
     }
 }

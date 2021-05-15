@@ -7,6 +7,7 @@ import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationFai
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationSuccessHandler;
 import com.icloud.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.icloud.corespringsecurity.security.provider.FormAuthenticationProvider;
+import com.icloud.corespringsecurity.service.ResourcesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -32,7 +33,7 @@ import java.util.Arrays;
 @Order(1)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailsService userDetailsService;
+    private final ResourcesService resourcesService;
     private final FormAuthenticationProvider authenticationProvider;
 
     private final FormAuthenticationDetailsSource authenticationDetailsSource;
@@ -85,7 +86,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() throws Exception {
-        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean.getObject());
+        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFactoryBean.getObject(), resourcesService);
     }
 
     @Override

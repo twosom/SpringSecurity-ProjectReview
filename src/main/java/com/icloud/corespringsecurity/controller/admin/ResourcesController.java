@@ -4,6 +4,7 @@ import com.icloud.corespringsecurity.domain.dto.ResourcesDto;
 import com.icloud.corespringsecurity.domain.entity.Resources;
 import com.icloud.corespringsecurity.domain.entity.Role;
 import com.icloud.corespringsecurity.repository.RoleRepository;
+import com.icloud.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.icloud.corespringsecurity.service.ResourcesService;
 import com.icloud.corespringsecurity.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ResourcesController {
     private final ResourcesService resourcesService;
     private final RoleRepository roleRepository;
     private final RoleService roleService;
+    private final UrlFilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource;
 
     private final ModelMapper mapper;
 
@@ -44,8 +46,8 @@ public class ResourcesController {
 
         Resources resources = mapper.map(resourcesDto, Resources.class);
         resources.setRoleSet(roles);
-
         resourcesService.createResources(resources);
+        urlFilterInvocationSecurityMetadataSource.reload();
 
         return "redirect:/admin/resources";
     }
@@ -73,9 +75,12 @@ public class ResourcesController {
 
         return "admin/resource/detail";
     }
+
     @GetMapping("/admin/resources/delete/{id}")
     public String removeResources(@PathVariable("id") Long id, Model model) {
         resourcesService.deleteResources(id);
+        urlFilterInvocationSecurityMetadataSource.reload();
+
         return "redirect:/admin/resources";
     }
 }
