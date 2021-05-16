@@ -1,20 +1,31 @@
 package com.icloud.corespringsecurity.security.configs;
 
 import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
+import com.icloud.corespringsecurity.security.factory.UrlMetadataSourceFactoryBean;
 import com.icloud.corespringsecurity.security.handler.form.FormAccessDeniedHandler;
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationFailureHandler;
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationSuccessHandler;
+import com.icloud.corespringsecurity.security.metadata.UrlFilterInvocationSecurityMetadataSource;
 import com.icloud.corespringsecurity.security.provider.FormAuthenticationProvider;
+import com.icloud.corespringsecurity.service.ResourcesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+
+import javax.servlet.Filter;
+import java.util.Arrays;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -34,6 +45,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final FormAuthenticationFailureHandler failureHandler;
     private final FormAccessDeniedHandler accessDeniedHandler;
 
+    private final UrlMetadataSourceFactoryBean urlMetadataSourceFactoryBean;
+    private final ResourcesService resourcesService;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -41,10 +55,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         accessDeniedHandler.setErrorPage("/denied");
 
         http.authorizeRequests()
-                .antMatchers("/", "/users", "user/login/**", "/login*").permitAll()
-                .antMatchers("/mypage").hasRole("USER")
-                .antMatchers("/messages").hasRole("MANAGER")
-                .antMatchers("/config").hasRole("ADMIN")
+//                .antMatchers("/", "/users", "user/login/**", "/login*").permitAll()
+//                .antMatchers("/mypage").hasRole("USER")
+//                .antMatchers("/messages").hasRole("MANAGER")
+//                .antMatchers("/config").hasRole("ADMIN")
                 .anyRequest().authenticated();
 
         http.formLogin()
@@ -56,9 +70,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(failureHandler)
                 .permitAll();
 
+        http.addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class);
+
         http.exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler);
     }
+
+    @Bean
+    public FilterSecurityInterceptor customFilterSecurityInterceptor() throws Exception {
+        FilterSecurityInterceptor fsi = new FilterSecurityInterceptor();
+        fsi.setAuthenticationManager(authenticationManager());
+        fsi.setAccessDecisionManager(new AffirmativeBased(Arrays.asList(new RoleVoter())));
+        fsi.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
+
+        return fsi;
+    }
+
+    @Bean
+    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() throws Exception {
+        return new UrlFilterInvocationSecurityMetadataSource(urlMetadataSourceFactoryBean.getObject(), resourcesService);
+    }
+
 
     @Override
     public void configure(WebSecurity web) throws Exception {
