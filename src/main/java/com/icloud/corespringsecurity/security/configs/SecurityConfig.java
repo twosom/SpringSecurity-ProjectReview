@@ -2,6 +2,7 @@ package com.icloud.corespringsecurity.security.configs;
 
 import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
 import com.icloud.corespringsecurity.security.factory.UrlResourcesMapFactoryBean;
+import com.icloud.corespringsecurity.security.filter.PermitAllFilter;
 import com.icloud.corespringsecurity.security.handler.form.FormAccessDeniedHandler;
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationFailureHandler;
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationSuccessHandler;
@@ -24,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
+import javax.annotation.security.PermitAll;
 import javax.servlet.Filter;
 import java.util.Arrays;
 
@@ -46,6 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final FormAccessDeniedHandler accessDeniedHandler;
 
     private final UrlResourcesMapFactoryBean urlResourcesMapFactoryBean;
+
+    private String[] permitAllResources = {"/", "/login", "/user/login/**", "/api/login", "/js/**"};
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -76,7 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public Filter customSecurityFilterInterceptor() throws Exception {
-        FilterSecurityInterceptor fsi = new FilterSecurityInterceptor();
+        PermitAllFilter fsi = new PermitAllFilter(permitAllResources);
         fsi.setAuthenticationManager(authenticationManager());
         fsi.setAccessDecisionManager(new AffirmativeBased(Arrays.asList(new RoleVoter())));
         fsi.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
