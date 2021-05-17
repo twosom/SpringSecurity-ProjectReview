@@ -19,7 +19,7 @@ public class FormAccessDeniedHandler implements AccessDeniedHandler {
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-        String deniedUrl = errorPage + "?exception=" + accessDeniedException.getMessage();
+        String deniedUrl = errorPage + "?exception=" + "access is denied";
         response.sendRedirect(deniedUrl);
 
     }
