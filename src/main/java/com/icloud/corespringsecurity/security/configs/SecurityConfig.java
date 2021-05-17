@@ -1,20 +1,37 @@
 package com.icloud.corespringsecurity.security.configs;
 
 import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
+import com.icloud.corespringsecurity.security.factory.UrlMetadataFactoryBean;
+import com.icloud.corespringsecurity.security.filter.PermitAllFilter;
 import com.icloud.corespringsecurity.security.handler.form.FormAccessDeniedHandler;
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationFailureHandler;
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationSuccessHandler;
+import com.icloud.corespringsecurity.security.metadata.UrlFilterInvocationSecurityMetadataSource;
 import com.icloud.corespringsecurity.security.provider.FormAuthenticationProvider;
+import com.icloud.corespringsecurity.service.ResourcesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.RoleHierarchyVoter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+
+import javax.servlet.Filter;
+import java.util.ArrayList;
+import java.util.List;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -33,6 +50,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final FormAuthenticationSuccessHandler successHandler;
     private final FormAuthenticationFailureHandler failureHandler;
     private final FormAccessDeniedHandler accessDeniedHandler;
+
+    private final UrlMetadataFactoryBean urlMetadataFactoryBean;
+    private final ResourcesService resourcesService;
+    private String[] permitAllList = {"/", "/login", "/api/login"};
 
 
     @Override
@@ -56,8 +77,47 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(failureHandler)
                 .permitAll();
 
+        http.addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class);
+
         http.exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler);
+    }
+
+    @Bean
+    public Filter customFilterSecurityInterceptor() throws Exception {
+        PermitAllFilter permitAllFilter = new PermitAllFilter(this.permitAllList);
+        permitAllFilter.setAuthenticationManager(authenticationManager());
+        permitAllFilter.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
+        permitAllFilter.setAccessDecisionManager(getAccessDecisionManager());
+
+        return permitAllFilter;
+    }
+
+    private AccessDecisionManager getAccessDecisionManager() {
+        return new AffirmativeBased(getDecisionVoters());
+    }
+
+    private List<AccessDecisionVoter<?>> getDecisionVoters() {
+        List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+        accessDecisionVoters.add(roleVoter());
+
+
+        return accessDecisionVoters;
+    }
+
+    @Bean
+    public AccessDecisionVoter<? extends Object> roleVoter() {
+        return new RoleHierarchyVoter(roleHierarchy());
+    }
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        return new RoleHierarchyImpl();
+    }
+
+    @Bean
+    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() throws Exception {
+        return new UrlFilterInvocationSecurityMetadataSource(urlMetadataFactoryBean.getObject(), resourcesService);
     }
 
     @Override
