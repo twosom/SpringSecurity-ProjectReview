@@ -14,7 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.RoleHierarchyVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,7 +31,9 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 
 import javax.annotation.security.PermitAll;
 import javax.servlet.Filter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -57,10 +63,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         accessDeniedHandler.setErrorPage("/denied");
 
         http.authorizeRequests()
-//                .antMatchers("/", "/users", "user/login/**", "/login*").permitAll()
-//                .antMatchers("/mypage").hasRole("USER")
-//                .antMatchers("/messages").hasRole("MANAGER")
-//                .antMatchers("/config").hasRole("ADMIN")
                 .anyRequest().authenticated();
 
         http.formLogin()
@@ -82,10 +84,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public Filter customSecurityFilterInterceptor() throws Exception {
         PermitAllFilter fsi = new PermitAllFilter(permitAllResources);
         fsi.setAuthenticationManager(authenticationManager());
-        fsi.setAccessDecisionManager(new AffirmativeBased(Arrays.asList(new RoleVoter())));
+        fsi.setAccessDecisionManager(getAccessDecisionManager());
         fsi.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
 
         return fsi;
+    }
+
+    private AffirmativeBased getAccessDecisionManager() {
+        return new AffirmativeBased(getDecisionVoters());
+    }
+
+    private List<AccessDecisionVoter<?>> getDecisionVoters() {
+
+        List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+        accessDecisionVoters.add(roleVoter());
+
+        return accessDecisionVoters;
+    }
+
+    @Bean
+    public AccessDecisionVoter<? extends Object> roleVoter() {
+
+        RoleHierarchyVoter roleHierarchyVoter = new RoleHierarchyVoter(roleHierarchy());
+
+        return roleHierarchyVoter;
+    }
+
+    @Bean
+    public RoleHierarchyImpl roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        return roleHierarchy;
     }
 
     @Bean

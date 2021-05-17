@@ -4,21 +4,15 @@ import com.icloud.corespringsecurity.security.handler.ajax.AjaxAccessDeniedHandl
 import com.icloud.corespringsecurity.security.handler.ajax.AjaxAuthenticationFailureHandler;
 import com.icloud.corespringsecurity.security.handler.ajax.AjaxAuthenticationSuccessHandler;
 import com.icloud.corespringsecurity.security.handler.ajax.AjaxLoginAuthenticationEntryPoint;
-import com.icloud.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.icloud.corespringsecurity.security.provider.AjaxAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.access.vote.AffirmativeBased;
-import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-
-import java.util.Arrays;
 
 @EnableWebSecurity
 @Slf4j
