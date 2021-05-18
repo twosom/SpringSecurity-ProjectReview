@@ -55,7 +55,7 @@
                         <option th:each="role: ${roleList}"
                                 th:value="${role.roleName}"
                                 th:text="${role.roleName}"
-                                th:selected="${resources.roleName.equals(role.roleName)} ? 'true' : 'false'"></option>
+                                th:selected="${resources.roleName != null && role.roleName.equals(resources.roleName)} ? 'true' : 'false'"></option>
                     </select>
                 </div>
             </div>
