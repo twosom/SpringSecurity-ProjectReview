@@ -1,6 +1,7 @@
 package com.icloud.corespringsecurity.security.configs;
 
 import com.icloud.corespringsecurity.security.filter.AjaxLoginProcessingFilter;
+import com.icloud.corespringsecurity.security.filter.PermitAllFilter;
 import com.icloud.corespringsecurity.security.handler.ajax.AjaxAccessDeniedHandler;
 import com.icloud.corespringsecurity.security.handler.ajax.AjaxAuthenticationFailureHandler;
 import com.icloud.corespringsecurity.security.handler.ajax.AjaxAuthenticationSuccessHandler;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
@@ -23,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AjaxAuthenticationProvider ajaxAuthenticationProvider;
+    private final PermitAllFilter permitAllFilter;
 
     private final AjaxAuthenticationSuccessHandler successHandler;
     private final AjaxAuthenticationFailureHandler failureHandler;
@@ -45,6 +48,8 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
         http.exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler)
                 .authenticationEntryPoint(authenticationEntryPoint);
+
+        http.addFilterBefore(permitAllFilter, FilterSecurityInterceptor.class);
 
         customConfigurer(http);
     }

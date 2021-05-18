@@ -1,6 +1,7 @@
 package com.icloud.corespringsecurity.security.service;
 
-import com.icloud.corespringsecurity.domain.Account;
+import com.icloud.corespringsecurity.domain.entity.Account;
+import com.icloud.corespringsecurity.domain.entity.Role;
 import com.icloud.corespringsecurity.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,12 +10,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -27,9 +31,12 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("UsernameNotFoundException");
         }
 
-        List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(account.getRole()));
+        List<SimpleGrantedAuthority> authorities = account.getRoleList()
+                .stream().map(Role::getRoleName)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
 
-        return new AccountContext(account, roles);
+
+        return new AccountContext(account, authorities);
     }
 }
