@@ -12,13 +12,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService, Serializable {
 
     private final UserRepository userRepository;
 
@@ -32,7 +33,9 @@ public class CustomUserDetailsService implements UserDetailsService {
             }
         }
 
-        List<String> userRoles = account.getUserRoles().stream().map(Role::getRoleName)
+        List<String> userRoles = account.getUserRoles()
+                .stream()
+                .map(Role::getRoleName)
                 .collect(Collectors.toList());
 
         List<SimpleGrantedAuthority> collect = userRoles.stream().map(SimpleGrantedAuthority::new)

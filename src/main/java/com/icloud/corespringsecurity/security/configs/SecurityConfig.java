@@ -8,6 +8,7 @@ import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationFai
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationSuccessHandler;
 import com.icloud.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.icloud.corespringsecurity.security.provider.FormAuthenticationProvider;
+import com.icloud.corespringsecurity.security.voter.IpAddressVoter;
 import com.icloud.corespringsecurity.service.ResourcesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final ResourcesService resourcesService;
     private final FormAuthenticationProvider authenticationProvider;
 
-    private final FormAuthenticationDetailsSource authenticationDetailsSource;
 
     /**
      * Handler
@@ -54,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final FormAccessDeniedHandler accessDeniedHandler;
 
     private final UrlResourcesMapFactoryBean urlResourcesMapFactoryBean;
+    private final IpAddressVoter ipAddressVoter;
 
     private String[] permitAllResources = {"/", "/login", "/user/login/**", "/api/login", "/js/**"};
 
@@ -65,14 +66,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .anyRequest().authenticated();
 
-        http.formLogin()
-                .loginPage("/login")
-                .loginProcessingUrl("/login_proc")
-                .authenticationDetailsSource(authenticationDetailsSource)
-                .defaultSuccessUrl("/")
-                .successHandler(successHandler)
-                .failureHandler(failureHandler)
-                .permitAll();
 
         http.addFilterBefore(customSecurityFilterInterceptor(), FilterSecurityInterceptor.class);
 
@@ -96,7 +89,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private List<AccessDecisionVoter<?>> getDecisionVoters() {
 
-        List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+        List<AccessDecisionVoter<?>> accessDecisionVoters = new ArrayList<>();
+        accessDecisionVoters.add(ipAddressVoter);
         accessDecisionVoters.add(roleVoter());
 
         return accessDecisionVoters;
@@ -104,16 +98,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AccessDecisionVoter<? extends Object> roleVoter() {
-
-        RoleHierarchyVoter roleHierarchyVoter = new RoleHierarchyVoter(roleHierarchy());
-
-        return roleHierarchyVoter;
+        return new RoleHierarchyVoter(roleHierarchy());
     }
 
     @Bean
     public RoleHierarchyImpl roleHierarchy() {
-        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        return roleHierarchy;
+        return new RoleHierarchyImpl();
     }
 
     @Bean

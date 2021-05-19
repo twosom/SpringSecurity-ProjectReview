@@ -1,13 +1,7 @@
 package com.icloud.corespringsecurity.security.listener;
 
-import com.icloud.corespringsecurity.domain.entity.Account;
-import com.icloud.corespringsecurity.domain.entity.Resources;
-import com.icloud.corespringsecurity.domain.entity.Role;
-import com.icloud.corespringsecurity.domain.entity.RoleHierarchy;
-import com.icloud.corespringsecurity.repository.ResourcesRepository;
-import com.icloud.corespringsecurity.repository.RoleHierarchyRepository;
-import com.icloud.corespringsecurity.repository.RoleRepository;
-import com.icloud.corespringsecurity.repository.UserRepository;
+import com.icloud.corespringsecurity.domain.entity.*;
+import com.icloud.corespringsecurity.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -29,6 +23,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private final RoleRepository roleRepository;
     private final ResourcesRepository resourcesRepository;
     private final RoleHierarchyRepository roleHierarchyRepository;
+    private final AccessIpRepository accessIpRepository;
 
     private final PasswordEncoder encoder;
 
@@ -43,8 +38,21 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
 
         setupSecurityResource();
+        setupAccessIpData("0:0:0:0:0:0:0:1");
+        setupAccessIpData("127.0.0.1");
 
         alreadySetup = true;
+    }
+
+    private void setupAccessIpData(String ipAddress) {
+        AccessIp byIpAddress = accessIpRepository.findByIpAddress(ipAddress);
+        if (byIpAddress == null) {
+            byIpAddress = AccessIp.builder()
+                    .ipAddress(ipAddress)
+                    .build();
+
+            accessIpRepository.save(byIpAddress);
+        }
     }
 
     private void setupSecurityResource() {
