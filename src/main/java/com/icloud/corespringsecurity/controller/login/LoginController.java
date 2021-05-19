@@ -1,12 +1,10 @@
 package com.icloud.corespringsecurity.controller.login;
 
-import com.icloud.corespringsecurity.domain.Account;
-import com.icloud.corespringsecurity.security.service.AccountContext;
+import com.icloud.corespringsecurity.domain.entity.Account;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,7 +35,7 @@ public class LoginController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && !((Account) authentication.getPrincipal()).getRole().equals("ROLE_ANONYMOUS")) {
+        if (authentication != null) {
             new SecurityContextLogoutHandler().logout(request, response, authentication);
             return ResponseEntity
                     .status(HttpStatus.OK)

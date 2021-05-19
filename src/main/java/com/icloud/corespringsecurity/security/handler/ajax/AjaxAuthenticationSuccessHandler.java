@@ -1,12 +1,14 @@
 package com.icloud.corespringsecurity.security.handler.ajax;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.icloud.corespringsecurity.domain.Account;
+import com.icloud.corespringsecurity.domain.entity.Account;
+import com.icloud.corespringsecurity.security.token.AjaxAuthenticationToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -21,16 +23,13 @@ import java.io.IOException;
 @Slf4j
 public class AjaxAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private RequestCache requestCache = new HttpSessionRequestCache();
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
         Account account = (Account) authentication.getPrincipal();
-
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
+        ((AjaxAuthenticationToken) authentication).setDetails(new WebAuthenticationDetails(request));
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
