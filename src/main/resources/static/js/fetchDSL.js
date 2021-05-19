@@ -106,6 +106,12 @@ const fetchDsl = {
             this.initJson(properties);
         }
         const response = await fetch(this.option.url, this.option);
+        if (response.status === 200) {
+            if (response.url.includes('login')) {
+                throw response;
+            }
+        }
+
         if (response.status !== 200) {
             const result = {};
             switch (response.status) {

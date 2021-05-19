@@ -3,7 +3,9 @@ package com.icloud.corespringsecurity.security.configs;
 import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
 import com.icloud.corespringsecurity.security.factory.UrlResourcesMapFactoryBean;
 import com.icloud.corespringsecurity.security.filter.PermitAllFilter;
+import com.icloud.corespringsecurity.security.handler.ajax.AjaxLoginAuthenticationEntryPoint;
 import com.icloud.corespringsecurity.security.handler.form.FormAccessDeniedHandler;
+import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationEntryPoint;
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationFailureHandler;
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationSuccessHandler;
 import com.icloud.corespringsecurity.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
@@ -22,6 +24,7 @@ import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleHierarchyVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -37,6 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
 @Slf4j
 @Order(1)
@@ -44,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final ResourcesService resourcesService;
     private final FormAuthenticationProvider authenticationProvider;
-
+    private final FormAuthenticationEntryPoint entryPoint;
 
     /**
      * Handler
@@ -56,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UrlResourcesMapFactoryBean urlResourcesMapFactoryBean;
     private final IpAddressVoter ipAddressVoter;
 
-    private String[] permitAllResources = {"/", "/login", "/user/login/**", "/api/login", "/js/**"};
+    private String[] permitAllResources = {"/", "/login", "/user/login/**", "/api/login", "/js/**", "/css/**"};
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -70,7 +74,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(customSecurityFilterInterceptor(), FilterSecurityInterceptor.class);
 
         http.exceptionHandling()
-                .accessDeniedHandler(accessDeniedHandler);
+                .accessDeniedHandler(accessDeniedHandler)
+                .authenticationEntryPoint(entryPoint);
     }
 
     @Bean
