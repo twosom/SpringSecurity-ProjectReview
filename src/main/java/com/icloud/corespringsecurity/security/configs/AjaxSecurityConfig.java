@@ -7,12 +7,17 @@ import com.icloud.corespringsecurity.security.handler.ajax.AjaxLoginAuthenticati
 import com.icloud.corespringsecurity.security.provider.AjaxAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+
+import javax.servlet.http.HttpServletRequest;
 
 @EnableWebSecurity
 @Slf4j
@@ -34,8 +39,6 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.antMatcher("/api/**")
                 .authorizeRequests()
-//                .antMatchers("/api/messages").hasRole("MANAGER")
-//                .antMatchers("/api/login").permitAll()
                 .anyRequest().authenticated();
 
         /*
@@ -55,7 +58,14 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
                 .setAuthenticationManager(authenticationManager())
                 .setSuccessHandlerAjax(successHandler)
                 .setFailureHandlerAjax(failureHandler)
+//                .authenticationDetailsSource(authenticationDetailSource())
                 .loginProcessingUrl("/api/login");
+
+    }
+
+    @Bean
+    public AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailSource() {
+        return new WebAuthenticationDetailsSource();
     }
 
     @Override
