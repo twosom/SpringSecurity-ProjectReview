@@ -37,7 +37,7 @@ public class RoleController {
     @PostMapping("/admin/roles/register")
     public String createRole(RoleDto roleDto) {
         roleService.createRole(roleDto);
-
+        roleService.reloadRoleHierarchy();
         return "redirect:/admin/roles";
     }
 
@@ -52,7 +52,7 @@ public class RoleController {
     @GetMapping("/admin/roles/delete/{id}")
     public String removeRole(@PathVariable("id") Long id) {
         roleService.removeRole(id);
-
+        roleService.reloadRoleHierarchy();
         return "redirect:/admin/roles";
     }
 
