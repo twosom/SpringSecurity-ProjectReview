@@ -1,7 +1,7 @@
 package com.icloud.corespringsecurity.security.handler.ajax;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.icloud.corespringsecurity.domain.Account;
+import com.icloud.corespringsecurity.domain.entity.Account;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
