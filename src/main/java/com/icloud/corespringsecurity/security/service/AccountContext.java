@@ -1,6 +1,6 @@
 package com.icloud.corespringsecurity.security.service;
 
-import com.icloud.corespringsecurity.domain.Account;
+import com.icloud.corespringsecurity.domain.entity.Account;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
