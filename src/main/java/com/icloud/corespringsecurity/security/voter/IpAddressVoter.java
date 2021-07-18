@@ -1,17 +1,14 @@
 package com.icloud.corespringsecurity.security.voter;
 
-import com.icloud.corespringsecurity.repository.AccessIpRepository;
 import com.icloud.corespringsecurity.service.AccessIpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.List;
 

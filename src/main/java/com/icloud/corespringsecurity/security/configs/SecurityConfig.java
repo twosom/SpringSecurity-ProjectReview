@@ -1,6 +1,5 @@
 package com.icloud.corespringsecurity.security.configs;
 
-import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
 import com.icloud.corespringsecurity.security.factory.UrlResourcesMapFactoryBean;
 import com.icloud.corespringsecurity.security.filter.PermitAllFilter;
 import com.icloud.corespringsecurity.security.handler.form.FormAccessDeniedHandler;
@@ -16,24 +15,19 @@ import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleHierarchyVoter;
-import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
-import javax.annotation.security.PermitAll;
 import javax.servlet.Filter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @EnableWebSecurity

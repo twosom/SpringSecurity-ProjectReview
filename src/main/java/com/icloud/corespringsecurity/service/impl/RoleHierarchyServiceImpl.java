@@ -1,14 +1,10 @@
 package com.icloud.corespringsecurity.service.impl;
 
-import com.icloud.corespringsecurity.domain.entity.RoleHierarchy;
 import com.icloud.corespringsecurity.repository.RoleHierarchyRepository;
 import com.icloud.corespringsecurity.service.RoleHierarchyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Iterator;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

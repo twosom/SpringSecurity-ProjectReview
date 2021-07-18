@@ -1,6 +1,5 @@
 package com.icloud.corespringsecurity.security.provider;
 
-import com.icloud.corespringsecurity.security.common.FormAuthenticationDetailsSource;
 import com.icloud.corespringsecurity.security.common.FormWebAuthenticationDetails;
 import com.icloud.corespringsecurity.security.service.AccountContext;
 import lombok.RequiredArgsConstructor;
