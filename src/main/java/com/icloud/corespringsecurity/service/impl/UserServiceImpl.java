@@ -77,8 +77,8 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    @Secured("ROLE_USER")
     @Override
+    @Secured("ROLE_MANAGER")
     public void order() {
         System.out.println("order");
     }
