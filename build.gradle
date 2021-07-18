@@ -34,6 +34,8 @@ dependencies {
 
     //MODEL MAPPER
     implementation "org.modelmapper:modelmapper:2.4.2"
+
+    implementation 'com.h2database:h2'
 }
 
 test {

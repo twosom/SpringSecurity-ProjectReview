@@ -2,7 +2,6 @@ package com.icloud.corespringsecurity.security.configs;
 
 import com.icloud.corespringsecurity.security.factory.UrlResourcesMapFactoryBean;
 import com.icloud.corespringsecurity.security.filter.PermitAllFilter;
-import com.icloud.corespringsecurity.security.handler.ajax.AjaxLoginAuthenticationEntryPoint;
 import com.icloud.corespringsecurity.security.handler.form.FormAccessDeniedHandler;
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationEntryPoint;
 import com.icloud.corespringsecurity.security.handler.form.FormAuthenticationFailureHandler;
@@ -33,8 +32,9 @@ import javax.servlet.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-@EnableWebSecurity
+
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+@EnableWebSecurity
 @RequiredArgsConstructor
 @Slf4j
 @Order(1)

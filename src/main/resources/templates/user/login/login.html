@@ -77,10 +77,12 @@
             .headers(header)
             .json('username', 'password')
             .then(response => {
+                debugger;
                 alert('로그인에 성공하였습니다.');
                 window.location = '/';
             })
             .catch(error => {
+                debugger;
                 if (error.message === 'empty') {
 
                 } else {
